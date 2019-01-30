@@ -17,6 +17,7 @@
 		7C6587132201562A0007F5FF /* La_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6587122201562A0007F5FF /* La_AppUITests.swift */; };
 		7CD76A932201740E000FF285 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD76A922201740E000FF285 /* Model.swift */; };
 		7CD76A95220179BD000FF285 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD76A94220179BD000FF285 /* ContactCell.swift */; };
+		A578784F22025FB50016FDF9 /* AlreadyUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A578784E22025FB50016FDF9 /* AlreadyUserCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		7C6587142201562A0007F5FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7CD76A922201740E000FF285 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		7CD76A94220179BD000FF285 /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
+		A578784E22025FB50016FDF9 /* AlreadyUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlreadyUserCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +156,7 @@
 				7C6586F3220156270007F5FF /* Main.storyboard */,
 				7C6586FB2201562A0007F5FF /* LaunchScreen.storyboard */,
 				7CD76A94220179BD000FF285 /* ContactCell.swift */,
+				A578784E22025FB50016FDF9 /* AlreadyUserCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 				7CD76A95220179BD000FF285 /* ContactCell.swift in Sources */,
 				7C6586F2220156270007F5FF /* ContactsVC.swift in Sources */,
 				7C6586F8220156270007F5FF /* La_App.xcdatamodeld in Sources */,
+				A578784F22025FB50016FDF9 /* AlreadyUserCell.swift in Sources */,
 				7C6586F0220156270007F5FF /* AppDelegate.swift in Sources */,
 				7CD76A932201740E000FF285 /* Model.swift in Sources */,
 			);

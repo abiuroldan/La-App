@@ -14,7 +14,12 @@ class ContactsVC: UITableViewController {
     //MARK: - Variables
     let searchController = UISearchController(searchResultsController: nil)
     let cellID = "cellID"
+    let newCellID = "newCellID"
     
+    let testOne = Contact(name: "Steve", lastName: "Jobs", phoneNumber: "9342339384", isUser: true, contact: nil)
+    let testTwo = Contact(name: "Wozniac", lastName: "asdnflsad", phoneNumber: "234134234", isUser: true, contact: nil)
+    
+    var userLaApp = [Contact]()
     var contactsArray = [Contact]()
     var fullContactArray = [[Contact]]()
     let collation = UILocalizedIndexedCollation.current() // create a locale collation object, by which we can get section index titles of current locale. (locale = local contry/language)
@@ -32,6 +37,9 @@ class ContactsVC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        contactsArray.append(testOne)
+//        contactsArray.append(testTwo)
+//        fullContactArray.append(contactsArray)
         fetchContacts()
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -50,34 +58,38 @@ class ContactsVC: UITableViewController {
             
             if granted{
                 print("Access granted")
-//                var contactsArray = [Contact]()
+//                self.contactsArray.removeAll()
                 let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey]
                 let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
                 
-                request.sortOrder = .userDefault
+                request.sortOrder = .givenName
                 
                 do{
                     
                     try store.enumerateContacts(with: request, usingBlock: { (contact, stopPointerIfYouWantToStopEnumerating) in
                         
+                        var userBool = false
+                        if contact.givenName == self.testOne.name && contact.familyName == self.testOne.lastName{
+                            userBool = true
+                        }else{
+                            userBool = false
+                        }
+                        debugPrint("Userboll: ", userBool)
+                        let contactToAdd = Contact(name: contact.givenName, lastName: contact.familyName, phoneNumber: contact.phoneNumbers.first?.value.stringValue ?? "", isUser: userBool, contact: contact)
                         
-                        print(contact.givenName)
-                        print(contact.familyName)
-                        print(contact.phoneNumbers.first?.value.stringValue ?? "")
+                        if userBool{
+                            self.userLaApp.append(contactToAdd)
+                        }else{
+                            self.contactsArray.append(contactToAdd)
+                        }
                         
-                        self.contactsArray.append(Contact(name: contact.givenName + " " + contact.familyName, phoneNumber: contact.phoneNumbers.first?.value.stringValue ?? "", isUser: false))
+                        
                     })
-                    
-                    
-                    for index in self.contactsArray.indices{
-                        
-                        print(self.contactsArray[index].name)
-                        print(self.contactsArray[index].phoneNumber)
+                    if self.userLaApp.count != 0{
+                        self.fullContactArray.append(self.userLaApp)
                     }
                     
-                    self.setUpCollation()
-                    
-//                    self.fullContactArray.append(self.contactsArray)
+                    self.fullContactArray.append(self.contactsArray)
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
                     }
@@ -112,6 +124,7 @@ class ContactsVC: UITableViewController {
     //Setup search controller on tableView
     func setupSearchController(){
         searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Search by number or phone"
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.dimsBackgroundDuringPresentation = false
         tableView.tableHeaderView = searchController.searchBar
@@ -120,6 +133,7 @@ class ContactsVC: UITableViewController {
     //MARK: - TableView Methods
     func setupTableView(){
         tableView.register(ContactCell.self, forCellReuseIdentifier: cellID)
+        tableView.register(AlreadyUserCell.self, forCellReuseIdentifier: newCellID)
         tableView.tableFooterView = UIView(frame: .zero)
     }
     
@@ -131,21 +145,37 @@ class ContactsVC: UITableViewController {
         return fullContactArray[section].count
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let label = UILabel()
+        label.text = "Header"
+        return label
+    }
+    
+    /*override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sectionTitles[section]
     }
     
     override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return sectionTitles
-    }
+    }*/
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let currentContact = fullContactArray[indexPath.section][indexPath.row]
+        if indexPath.section == 0{
+            let cell = tableView.dequeueReusableCell(withIdentifier: newCellID, for: indexPath) as! AlreadyUserCell
+            cell.contact = currentContact
+            return cell
+        }else{
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! ContactCell
+            cell.contact = currentContact
+            return cell
+        }
+        
+        
+        
 //        let name = indexPath.section == 0 ? "Is user" : currentContact.name
-        let name = currentContact.name
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! ContactCell
-        cell.contactName.text = name
-        return cell
+//        let name = (currentContact.contact?.givenName ?? "") + " " + (currentContact.contact?.familyName ?? "")
+        
         
         
         /*var cell = UITableViewCell()
@@ -160,46 +190,10 @@ class ContactsVC: UITableViewController {
         }
         return cell*/
     }
-    
-    @objc func setUpCollation(){
-        let (arrayContacts, arrayTitles) = collation.partitionObjects(array: self.contactsArray as [AnyObject], collationStringSelector: #selector(getter: Contact.name))
-        self.fullContactArray = arrayContacts as! [[Contact]]
-        self.sectionTitles = arrayTitles
-        
-        print(fullContactArray.count)
-        print(sectionTitles.count)
-    }
-    
 }
 
 extension ContactsVC: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         
-    }
-}
-
-extension UILocalizedIndexedCollation {
-    //func for partition array in sections
-    func partitionObjects(array:[AnyObject], collationStringSelector:Selector) -> ([AnyObject], [String]) {
-        var unsortedSections = [[AnyObject]]()
-        
-        //1. Create a array to hold the data for each section
-        for _ in self.sectionTitles {
-            unsortedSections.append([]) //appending an empty array
-        }
-        //2. Put each objects into a section
-        for item in array {
-            let index:Int = self.section(for: item, collationStringSelector:collationStringSelector)
-            unsortedSections[index].append(item)
-        }
-        //3. sorting the array of each sections
-        var sectionTitles = [String]()
-        var sections = [AnyObject]()
-        for index in 0 ..< unsortedSections.count { if unsortedSections[index].count > 0 {
-            sectionTitles.append(self.sectionTitles[index])
-            sections.append(self.sortedArray(from: unsortedSections[index], collationStringSelector: collationStringSelector) as AnyObject)
-            }
-        }
-        return (sections, sectionTitles)
     }
 }

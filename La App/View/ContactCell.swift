@@ -9,6 +9,12 @@
 import UIKit
 
 class ContactCell: UITableViewCell {
+    
+    var contact: Contact! {
+        didSet{
+            contactName.text = contact.name + " " + contact.lastName
+        }
+    }
 
     let contactName: UILabel = {
         let label = UILabel()

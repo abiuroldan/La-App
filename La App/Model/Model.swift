@@ -7,15 +7,20 @@
 //
 
 import Foundation
+import Contacts
 
-@objc class Contact: NSObject {
-    @objc var name: String
-    @objc var phoneNumber: String
-    @objc var isUser: Bool = false
+struct Contact {
+    var name: String
+    var lastName: String
+    var phoneNumber: String
+    var contact: CNContact?
+    var isUser: Bool = false
     
-    init(name: String, phoneNumber: String, isUser: Bool) {
+    init(name: String, lastName: String, phoneNumber: String, isUser: Bool, contact: CNContact?) {
         self.name = name
+        self.lastName = lastName
         self.phoneNumber = phoneNumber
         self.isUser = isUser
+        self.contact = contact
     }
 }
