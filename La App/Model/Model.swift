@@ -8,10 +8,10 @@
 
 import Foundation
 
-struct Contact {
-    var name: String
-    var phoneNumber: String
-    var isUser: Bool = false
+@objc class Contact: NSObject {
+    @objc var name: String
+    @objc var phoneNumber: String
+    @objc var isUser: Bool = false
     
     init(name: String, phoneNumber: String, isUser: Bool) {
         self.name = name
