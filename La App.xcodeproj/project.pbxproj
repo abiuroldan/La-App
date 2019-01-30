@@ -8,13 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		7C6586F0220156270007F5FF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6586EF220156270007F5FF /* AppDelegate.swift */; };
-		7C6586F2220156270007F5FF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6586F1220156270007F5FF /* ViewController.swift */; };
+		7C6586F2220156270007F5FF /* ContactsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6586F1220156270007F5FF /* ContactsVC.swift */; };
 		7C6586F5220156270007F5FF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C6586F3220156270007F5FF /* Main.storyboard */; };
 		7C6586F8220156270007F5FF /* La_App.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7C6586F6220156270007F5FF /* La_App.xcdatamodeld */; };
 		7C6586FA2201562A0007F5FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C6586F92201562A0007F5FF /* Assets.xcassets */; };
 		7C6586FD2201562A0007F5FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C6586FB2201562A0007F5FF /* LaunchScreen.storyboard */; };
 		7C6587082201562A0007F5FF /* La_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6587072201562A0007F5FF /* La_AppTests.swift */; };
 		7C6587132201562A0007F5FF /* La_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6587122201562A0007F5FF /* La_AppUITests.swift */; };
+		7CD76A932201740E000FF285 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD76A922201740E000FF285 /* Model.swift */; };
+		7CD76A95220179BD000FF285 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CD76A94220179BD000FF285 /* ContactCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,7 +39,7 @@
 /* Begin PBXFileReference section */
 		7C6586EC220156270007F5FF /* La App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "La App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C6586EF220156270007F5FF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7C6586F1220156270007F5FF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7C6586F1220156270007F5FF /* ContactsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsVC.swift; sourceTree = "<group>"; };
 		7C6586F4220156270007F5FF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7C6586F7220156270007F5FF /* La_App.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = La_App.xcdatamodel; sourceTree = "<group>"; };
 		7C6586F92201562A0007F5FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -49,6 +51,8 @@
 		7C65870E2201562A0007F5FF /* La AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "La AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C6587122201562A0007F5FF /* La_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = La_AppUITests.swift; sourceTree = "<group>"; };
 		7C6587142201562A0007F5FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7CD76A922201740E000FF285 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		7CD76A94220179BD000FF285 /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +134,7 @@
 		7C658720220156350007F5FF /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				7CD76A922201740E000FF285 /* Model.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -138,7 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				7C6586EF220156270007F5FF /* AppDelegate.swift */,
-				7C6586F1220156270007F5FF /* ViewController.swift */,
+				7C6586F1220156270007F5FF /* ContactsVC.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -148,6 +153,7 @@
 			children = (
 				7C6586F3220156270007F5FF /* Main.storyboard */,
 				7C6586FB2201562A0007F5FF /* LaunchScreen.storyboard */,
+				7CD76A94220179BD000FF285 /* ContactCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -283,9 +289,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C6586F2220156270007F5FF /* ViewController.swift in Sources */,
+				7CD76A95220179BD000FF285 /* ContactCell.swift in Sources */,
+				7C6586F2220156270007F5FF /* ContactsVC.swift in Sources */,
 				7C6586F8220156270007F5FF /* La_App.xcdatamodeld in Sources */,
 				7C6586F0220156270007F5FF /* AppDelegate.swift in Sources */,
+				7CD76A932201740E000FF285 /* Model.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
