@@ -12,7 +12,10 @@ class ContactCell: UITableViewCell {
     
     var contact: Contact! {
         didSet{
-            contactName.text = contact.name + " " + contact.lastName
+            let name = contact.contact?.givenName ?? contact.name
+            let lastName = contact.contact?.familyName ?? contact.lastName
+            let suffix = contact.contact?.nameSuffix ?? ""
+            contactName.text = name + " " + lastName + " " + suffix
         }
     }
 
