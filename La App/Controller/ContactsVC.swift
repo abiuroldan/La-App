@@ -10,10 +10,12 @@ import UIKit
 import Contacts
 import MessageUI
 
+var allContacts = [Contact]()
+
 class ContactsVC: UITableViewController {
     
     //MARK: - Variables
-    let searchController = UISearchController(searchResultsController: nil)
+    let searchController = UISearchController(searchResultsController: SearchTVC())
     let cellID = "cellID"
     let newCellID = "newCellID"
     
@@ -36,10 +38,15 @@ class ContactsVC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNotifications()
         fetchContacts()
         // Do any additional setup after loading the view, typically from a nib.
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        searchController.dismiss(animated: false, completion: nil)
+    }
 
     //MARK: - Methods
     //Request and setup access contacts
@@ -54,21 +61,15 @@ class ContactsVC: UITableViewController {
             
             if granted{
                 print("Access granted")
-//                self.contactsArray.removeAll()
+                self.cleanAll()
                 let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey, CNContactEmailAddressesKey, CNContactBirthdayKey, CNContactNameSuffixKey, CNContactImageDataAvailableKey, CNContactImageDataKey, CNContactThumbnailImageDataKey]
                 let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
                 
                 request.sortOrder = .givenName
                 
                 do{
-                    
+//                   self.cleanAll()
                     try store.enumerateContacts(with: request, usingBlock: { (contact, stopPointerIfYouWantToStopEnumerating) in
-                        
-                        if let imageData = contact.thumbnailImageData {
-                            print("image \(String(describing: UIImage(data: imageData)))")
-                        } else {
-                            print("No image available")
-                        }
                         
                         //Verify is already La App user
                         var userBool = false
@@ -85,6 +86,7 @@ class ContactsVC: UITableViewController {
                         let contactToAdd = Contact(name: contact.givenName, lastName: contact.familyName, phoneNumber: contact.phoneNumbers.first?.value.stringValue ?? "", isUser: userBool, contact: contact)
                         
                         //If is true the contact will be save in La App array user
+                        allContacts.append(contactToAdd)
                         if userBool{
                             self.userLaApp.append(contactToAdd)
                         }else{
@@ -99,8 +101,6 @@ class ContactsVC: UITableViewController {
                         self.fullContactArray.append(self.userLaApp)
                     }*/
                     self.fullContactArray.append(self.userLaApp)
-//                    self.fullContactArray.append(self.contactsArray)
-                    debugPrint("self.full: ", self.fullContactArray)
                     self.setUpCollation()
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
@@ -133,11 +133,25 @@ class ContactsVC: UITableViewController {
         
     }
     
+    func cleanAll(){
+        fullContactArray.removeAll()
+        contactsArray.removeAll()
+        userLaApp.removeAll()
+        sectionTitles.removeAll()
+        sectionTitles.append("User")
+        allContacts.removeAll()
+    }
+    
+    func setupNotifications(){
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+    
+    @objc func willEnterForeground(_ notification: NSNotification){
+        fetchContacts()
+    }
+    
     @objc func setUpCollation(){
         let (arrayContacts, arrayTitles) = collation.partitionObjects(array: self.contactsArray, collationStringSelector: #selector(getter: Contact.name))
-//        self.contactsWithSections = arrayContacts as! [[Contact]]
-        debugPrint("arrayContacts: ", arrayContacts.map{$0})
-//        self.sectionTitles = arrayTitles
         for item in arrayTitles{
             self.sectionTitles.append(item)
         }
@@ -145,18 +159,15 @@ class ContactsVC: UITableViewController {
         for contactItem in arrayContacts{
             self.fullContactArray.append(contactItem as! [Contact])
         }
-        
-        print(fullContactArray.count)
-        print(sectionTitles.count)
-        print(sectionTitles)
     }
     
     //Setup search controller on tableView
     func setupSearchController(){
-        searchController.searchResultsUpdater = self
+        let searchView = SearchTVC()
+        searchController.searchResultsUpdater = searchView
         searchController.searchBar.placeholder = "Search by name or phone"
-        searchController.hidesNavigationBarDuringPresentation = false
-        searchController.dimsBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = true
+        searchController.dimsBackgroundDuringPresentation = true
         tableView.tableHeaderView = searchController.searchBar
     }
     
@@ -174,12 +185,6 @@ class ContactsVC: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return fullContactArray[section].count
     }
-    
-    /*override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let label = UILabel()
-        label.text = "Header"
-        return label
-    }*/
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sectionTitles[section]
@@ -206,26 +211,6 @@ class ContactsVC: UITableViewController {
             cell.contact = currentContact
             return cell
         }
-        
-        
-        
-        
-//        let name = indexPath.section == 0 ? "Is user" : currentContact.name
-//        let name = (currentContact.contact?.givenName ?? "") + " " + (currentContact.contact?.familyName ?? "")
-        
-        
-        
-        /*var cell = UITableViewCell()
-        if currentContact.isUser{
-            
-        }else{
-            let newCell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! ContactCell
-            newCell.contactName.text = currentContact.name
-            cell = newCell
-//        cell.detailTextLabel?.text = currentContact.isUser ? currentContact.phoneNumber : ""
-            
-        }
-        return cell*/
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -262,11 +247,15 @@ class ContactsVC: UITableViewController {
     }
 }
 
-extension ContactsVC: UISearchResultsUpdating{
-    func updateSearchResults(for searchController: UISearchController) {
-        
-    }
-}
+//extension ContactsVC: UISearchResultsUpdating{
+//    func updateSearchResults(for searchController: UISearchController) {
+//        if let searchText = searchController.searchBar.text, !searchText.isEmpty{
+//
+//        }else{
+//
+//        }
+//    }
+//}
 
 extension ContactsVC: MFMessageComposeViewControllerDelegate{
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
@@ -283,31 +272,5 @@ extension ContactsVC: MFMessageComposeViewControllerDelegate{
         default:
             break
         }
-    }
-}
-
-extension UILocalizedIndexedCollation {
-    //func for partition array in sections
-    func partitionObjects(array:[AnyObject], collationStringSelector:Selector) -> ([AnyObject], [String]) {
-        var unsortedSections = [[AnyObject]]()
-        
-        //1. Create a array to hold the data for each section
-        for _ in self.sectionTitles {
-            unsortedSections.append([]) //appending an empty array
-        }
-        //2. Put each objects into a section
-        for item in array {
-            let index:Int = self.section(for: item, collationStringSelector:collationStringSelector)
-            unsortedSections[index].append(item)
-        }
-        //3. sorting the array of each sections
-        var sectionTitles = [String]()
-        var sections = [AnyObject]()
-        for index in 0 ..< unsortedSections.count { if unsortedSections[index].count > 0 {
-            sectionTitles.append(self.sectionTitles[index])
-            sections.append(self.sortedArray(from: unsortedSections[index], collationStringSelector: collationStringSelector) as AnyObject)
-            }
-        }
-        return (sections, sectionTitles)
     }
 }
