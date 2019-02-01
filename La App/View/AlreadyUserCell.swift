@@ -22,7 +22,7 @@ class AlreadyUserCell: UITableViewCell {
             if let imageData = contact.contact?.thumbnailImageData {
                 imageUser.image = UIImage(data: imageData)
             } else {
-                imageUser.backgroundColor = .green
+                imageUser.image = #imageLiteral(resourceName: "user")
             }
             
         }

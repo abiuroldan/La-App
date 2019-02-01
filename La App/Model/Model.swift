@@ -9,8 +9,8 @@
 import Foundation
 import Contacts
 
-struct Contact {
-    var name: String
+@objc class Contact: NSObject {
+    @objc var name: String
     var lastName: String
     var phoneNumber: String
     var contact: CNContact?

@@ -8,6 +8,7 @@
 
 import UIKit
 import Contacts
+import MessageUI
 
 class ContactsVC: UITableViewController {
     
@@ -17,7 +18,7 @@ class ContactsVC: UITableViewController {
     let newCellID = "newCellID"
     
     let testOne = Contact(name: "Steve", lastName: "Jobs", phoneNumber: "(554) 323-4376", isUser: true, contact: nil)
-    let testTwo = Contact(name: "Wozniac", lastName: "asdnflsad", phoneNumber: "234134234", isUser: true, contact: nil)
+    let testTwo = Contact(name: "Sean", lastName: "Allen", phoneNumber: "(234) 134-2334", isUser: true, contact: nil)
     
     var userLaApp = [Contact]()
     var contactsArray = [Contact]()
@@ -35,9 +36,6 @@ class ContactsVC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        contactsArray.append(testOne)
-//        contactsArray.append(testTwo)
-//        fullContactArray.append(contactsArray)
         fetchContacts()
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -75,7 +73,7 @@ class ContactsVC: UITableViewController {
                         //Verify is already La App user
                         var userBool = false
                         if let phone = contact.phoneNumbers.first?.value.stringValue{
-                            if phone == self.testOne.phoneNumber{
+                            if phone == self.testOne.phoneNumber || phone == self.testTwo.phoneNumber{
                                 userBool = true
                             }else{
                                 userBool = false
@@ -101,7 +99,8 @@ class ContactsVC: UITableViewController {
                     }*/
                     self.fullContactArray.append(self.userLaApp)
                     self.fullContactArray.append(self.contactsArray)
-                    
+                    debugPrint("self.full: ", self.fullContactArray)
+                    self.setUpCollation()
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
                     }
@@ -131,6 +130,16 @@ class ContactsVC: UITableViewController {
     //Setup Layout
     func setupLayout(){
         
+    }
+    
+    @objc func setUpCollation(){
+        let (arrayContacts, arrayTitles) = collation.partitionObjects(array: self.contactsArray, collationStringSelector: #selector(getter: Contact.name))
+//        self.contactsWithSections = arrayContacts as! [[Contact]]
+        debugPrint("arrayContacts: ", arrayContacts.map{$0})
+        self.sectionTitles = arrayTitles
+        
+        print(fullContactArray.count)
+        print(sectionTitles.count)
     }
     
     //Setup search controller on tableView
@@ -209,10 +218,87 @@ class ContactsVC: UITableViewController {
         }
         return cell*/
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentContact = fullContactArray[indexPath.section][indexPath.row]
+        if currentContact.isUser{
+            if let navController = navigationController{
+                let contactView = ContactDetailVC()
+                contactView.contactSelected = currentContact
+                navController.pushViewController(contactView, animated: true)
+            }
+        }else{
+            debugPrint("No es usuario, mandar mensaje")
+            sendMessage()
+        }
+    }
+    
+    func sendMessage(){
+        if MFMessageComposeViewController.canSendText() {
+            let messageComposeViewController = MFMessageComposeViewController()
+            messageComposeViewController.body = "text"
+            present(messageComposeViewController, animated: true, completion: nil)
+        }else{
+            
+        }
+        
+        
+        /*let messageVC = MFMessageComposeViewController()
+        
+        messageVC.body = "Enter a message";
+//        messageVC.recipients = ["Enter tel-nr"]
+        messageVC.messageComposeDelegate = self
+        
+        self.present(messageVC, animated: true, completion: nil)*/
+    }
 }
 
 extension ContactsVC: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         
+    }
+}
+
+extension ContactsVC: MFMessageComposeViewControllerDelegate{
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        switch (result) {
+        case .cancelled:
+            print("Message was cancelled")
+            dismiss(animated: true, completion: nil)
+        case .failed:
+            print("Message failed")
+            dismiss(animated: true, completion: nil)
+        case .sent:
+            print("Message was sent")
+            dismiss(animated: true, completion: nil)
+        default:
+            break
+        }
+    }
+}
+
+extension UILocalizedIndexedCollation {
+    //func for partition array in sections
+    func partitionObjects(array:[AnyObject], collationStringSelector:Selector) -> ([AnyObject], [String]) {
+        var unsortedSections = [[AnyObject]]()
+        
+        //1. Create a array to hold the data for each section
+        for _ in self.sectionTitles {
+            unsortedSections.append([]) //appending an empty array
+        }
+        //2. Put each objects into a section
+        for item in array {
+            let index:Int = self.section(for: item, collationStringSelector:collationStringSelector)
+            unsortedSections[index].append(item)
+        }
+        //3. sorting the array of each sections
+        var sectionTitles = [String]()
+        var sections = [AnyObject]()
+        for index in 0 ..< unsortedSections.count { if unsortedSections[index].count > 0 {
+            sectionTitles.append(self.sectionTitles[index])
+            sections.append(self.sortedArray(from: unsortedSections[index], collationStringSelector: collationStringSelector) as AnyObject)
+            }
+        }
+        return (sections, sectionTitles)
     }
 }
