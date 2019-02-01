@@ -24,7 +24,7 @@ class ContactsVC: UITableViewController {
     var contactsArray = [Contact]()
     var fullContactArray = [[Contact]]()
     let collation = UILocalizedIndexedCollation.current() // create a locale collation object, by which we can get section index titles of current locale. (locale = local contry/language)
-    var sectionTitles: [String] = ["Usuario", "Contactos", "Otros"]
+    var sectionTitles: [String] = ["User"]
     
     override func loadView() {
         super.loadView()
@@ -81,7 +81,7 @@ class ContactsVC: UITableViewController {
                         }else{
                             userBool = false
                         }
-                        debugPrint("Userboll: ", userBool)
+                        
                         let contactToAdd = Contact(name: contact.givenName, lastName: contact.familyName, phoneNumber: contact.phoneNumbers.first?.value.stringValue ?? "", isUser: userBool, contact: contact)
                         
                         //If is true the contact will be save in La App array user
@@ -90,6 +90,7 @@ class ContactsVC: UITableViewController {
                         }else{
                             //All contacts that are not La App users
                             self.contactsArray.append(contactToAdd)
+//                            self.fullContactArray.append([contactToAdd])
                         }
                     })
                     
@@ -98,7 +99,7 @@ class ContactsVC: UITableViewController {
                         self.fullContactArray.append(self.userLaApp)
                     }*/
                     self.fullContactArray.append(self.userLaApp)
-                    self.fullContactArray.append(self.contactsArray)
+//                    self.fullContactArray.append(self.contactsArray)
                     debugPrint("self.full: ", self.fullContactArray)
                     self.setUpCollation()
                     DispatchQueue.main.async {
@@ -136,10 +137,18 @@ class ContactsVC: UITableViewController {
         let (arrayContacts, arrayTitles) = collation.partitionObjects(array: self.contactsArray, collationStringSelector: #selector(getter: Contact.name))
 //        self.contactsWithSections = arrayContacts as! [[Contact]]
         debugPrint("arrayContacts: ", arrayContacts.map{$0})
-        self.sectionTitles = arrayTitles
+//        self.sectionTitles = arrayTitles
+        for item in arrayTitles{
+            self.sectionTitles.append(item)
+        }
+        
+        for contactItem in arrayContacts{
+            self.fullContactArray.append(contactItem as! [Contact])
+        }
         
         print(fullContactArray.count)
         print(sectionTitles.count)
+        print(sectionTitles)
     }
     
     //Setup search controller on tableView
@@ -176,9 +185,9 @@ class ContactsVC: UITableViewController {
         return sectionTitles[section]
     }
     
-    /*override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         return sectionTitles
-    }*/
+    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let currentContact = fullContactArray[indexPath.section][indexPath.row]
