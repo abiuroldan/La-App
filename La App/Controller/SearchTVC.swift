@@ -22,6 +22,20 @@ class SearchTVC: UITableViewController, UISearchResultsUpdating {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    // MARK: - UISearchResultsUpdating
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        if let searchText = searchController.searchBar.text, !searchText.isEmpty{
+            filteredContacts = allContacts.filter({ (contact: Contact) -> Bool in
+                return contact.name.lowercased().contains(searchText.lowercased()) || contact.phoneNumber.contains(searchText)
+            })
+        }
+        
+        debugPrint("text: ", searchController.searchBar.text ?? "no hay texto")
+        
+        tableView.reloadData()
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -34,15 +48,19 @@ class SearchTVC: UITableViewController, UISearchResultsUpdating {
         return filteredContacts.count
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let currentContact = filteredContacts[indexPath.row]
+        let name = currentContact.name
+        let lastName = currentContact.lastName
+        let suffix = currentContact.contact?.nameSuffix ?? ""
 
-        // Configure the cell...
+        cell.textLabel?.text = name + " " + lastName + " " + suffix
 
         return cell
     }
-    */
+ 
 
     /*
     // Override to support conditional editing of the table view.
@@ -87,18 +105,7 @@ class SearchTVC: UITableViewController, UISearchResultsUpdating {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
     }
+     
     */
-
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        if let searchText = searchController.searchBar.text, !searchText.isEmpty{
-            filteredContacts = allContacts.filter({ (contact) -> Bool in
-                return contact.name.lowercased().contains(searchText.lowercased())
-            })
-        }else{
-            debugPrint("No hay tal contacto")
-        }
-        
-        tableView.reloadData()
-    }
+   
 }

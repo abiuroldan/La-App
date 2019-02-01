@@ -168,7 +168,9 @@ class ContactsVC: UITableViewController {
         searchController.searchBar.placeholder = "Search by name or phone"
         searchController.hidesNavigationBarDuringPresentation = true
         searchController.dimsBackgroundDuringPresentation = true
+        searchController.searchBar.delegate = self
         tableView.tableHeaderView = searchController.searchBar
+        definesPresentationContext = true
     }
     
     //MARK: - TableView Methods
@@ -247,16 +249,6 @@ class ContactsVC: UITableViewController {
     }
 }
 
-//extension ContactsVC: UISearchResultsUpdating{
-//    func updateSearchResults(for searchController: UISearchController) {
-//        if let searchText = searchController.searchBar.text, !searchText.isEmpty{
-//
-//        }else{
-//
-//        }
-//    }
-//}
-
 extension ContactsVC: MFMessageComposeViewControllerDelegate{
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         switch (result) {
@@ -273,4 +265,8 @@ extension ContactsVC: MFMessageComposeViewControllerDelegate{
             break
         }
     }
+}
+
+extension ContactsVC: UISearchBarDelegate{
+    
 }
