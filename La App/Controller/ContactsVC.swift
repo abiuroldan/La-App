@@ -15,7 +15,8 @@ var allContacts = [Contact]()
 class ContactsVC: UITableViewController {
     
     //MARK: - Variables
-    let searchController = UISearchController(searchResultsController: SearchTVC())
+    let searchVC = SearchTVC()
+    var searchController: UISearchController!
     let cellID = "cellID"
     let newCellID = "newCellID"
     
@@ -163,12 +164,14 @@ class ContactsVC: UITableViewController {
     
     //Setup search controller on tableView
     func setupSearchController(){
-        let searchView = SearchTVC()
-        searchController.searchResultsUpdater = searchView
+        searchController = UISearchController(searchResultsController: searchVC)
+        searchController.searchResultsUpdater = searchVC
         searchController.searchBar.placeholder = "Search by name or phone"
         searchController.hidesNavigationBarDuringPresentation = true
         searchController.dimsBackgroundDuringPresentation = true
-        searchController.searchBar.delegate = self
+        searchController.delegate = self
+        searchController.searchBar.delegate = searchVC
+        
         tableView.tableHeaderView = searchController.searchBar
         definesPresentationContext = true
     }
@@ -267,6 +270,6 @@ extension ContactsVC: MFMessageComposeViewControllerDelegate{
     }
 }
 
-extension ContactsVC: UISearchBarDelegate{
+extension ContactsVC: UISearchBarDelegate, UISearchControllerDelegate{
     
 }

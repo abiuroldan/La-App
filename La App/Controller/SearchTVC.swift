@@ -8,36 +8,28 @@
 
 import UIKit
 
-class SearchTVC: UITableViewController, UISearchResultsUpdating {
+class SearchTVC: UITableViewController, UISearchResultsUpdating, UISearchBarDelegate {
 
     var filteredContacts = [Contact]()
+    let cellID = "cellID"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellID)
     }
 
     // MARK: - UISearchResultsUpdating
-    
     func updateSearchResults(for searchController: UISearchController) {
         if let searchText = searchController.searchBar.text, !searchText.isEmpty{
             filteredContacts = allContacts.filter({ (contact: Contact) -> Bool in
                 return contact.name.lowercased().contains(searchText.lowercased()) || contact.phoneNumber.contains(searchText)
             })
         }
-        
-        debugPrint("text: ", searchController.searchBar.text ?? "no hay texto")
-        
         tableView.reloadData()
     }
     
+    
     // MARK: - Table view data source
-
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
@@ -50,10 +42,10 @@ class SearchTVC: UITableViewController, UISearchResultsUpdating {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
         let currentContact = filteredContacts[indexPath.row]
-        let name = currentContact.name
-        let lastName = currentContact.lastName
+        let name = (currentContact.contact?.givenName ?? currentContact.name)
+        let lastName = (currentContact.contact?.familyName ?? currentContact.lastName)
         let suffix = currentContact.contact?.nameSuffix ?? ""
 
         cell.textLabel?.text = name + " " + lastName + " " + suffix
@@ -61,6 +53,16 @@ class SearchTVC: UITableViewController, UISearchResultsUpdating {
         return cell
     }
  
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentContact = filteredContacts[indexPath.row]
+        
+        if currentContact.isUser{
+            debugPrint("Es usuario")
+        }else{
+            debugPrint("No es usuario")
+        }
+    }
 
     /*
     // Override to support conditional editing of the table view.
